@@ -33,21 +33,20 @@ def search_zara(product_list):
     except:
         pass
 
-    # Login işlemi
+
     try:
-        driver.find_element(By.XPATH, '//*[@id="theme-app"]/div/div/header/ul/li[2]/a').click()
+        driver.find_element(By.LINK_TEXT, "GİRİŞ YAP").click()
         wait.until(EC.visibility_of_element_located((By.NAME, "username"))).send_keys(mail)
         wait.until(EC.visibility_of_element_located((By.NAME, "password"))).send_keys(password)
-        wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="app"]/div/main/div[1]/div/div/form/button'))).click()
+        wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Oturum aç')]"))).click()
     except Exception as e:
         print(f"Login error: {e}")
 
-    # Ürün ekleme döngüsü
     for product_code, size in product_list:
         try:
             driver.get("https://www.zara.com/tr")
 
-            # Arama
+
             search_icon = wait.until(
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="theme-app"]/div/div/header/ul/li[1]/a')))
             driver.execute_script("arguments[0].click();", search_icon)
@@ -56,11 +55,11 @@ def search_zara(product_list):
             search_bar.clear()
             search_bar.send_keys(product_code, Keys.ENTER)
 
-            # İlk ürün
+
             first_product = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a.product-link")))
             driver.execute_script("arguments[0].click();", first_product)
 
-            # Beden seçimi
+
             sizes_ul = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "ul.size-selector-sizes")))
             sizes = sizes_ul.find_elements(By.TAG_NAME, "li")
             size_found = False
@@ -93,7 +92,7 @@ def search_zara(product_list):
         except Exception as e:
             print(f"{product_code}: Error during product process: {e}")
 
-    # Tüm ürünler eklendikten sonra sepete geç
+
     try:
         cart_count_element = driver.find_element(By.CSS_SELECTOR, "[data-qa-id='layout-header-go-to-cart-items-count']")
         cart_count = int(cart_count_element.text.strip() or 0)
